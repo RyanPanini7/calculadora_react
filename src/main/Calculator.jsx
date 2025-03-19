@@ -29,7 +29,37 @@ export default class Calculator extends Component {
   }
 
   setOperation(operation) {
-    console.log(operation)
+    if (this.state.current === 0){
+      this.setState({ operation, current: 1, clearDisplay: true })
+    } else {
+      const result = operation === '='
+      const currentOperation = this.state.operation
+
+      const values = [...this.state.values]
+      switch (currentOperation) {
+        case '/' :
+          values[0] = values[0] / values[1];
+          break;
+        case '*' :
+          values[0] = values[0] * values[1];
+          break;
+        case '-' :
+          values[0] = values[0] - values[1];
+          break;
+        case '+' :
+          values[0] = values[0] + values[1];
+          break;
+      }
+      values[1] = 0
+
+      this.setState({
+        displayValue: values[0],
+        operation: result ? null : operation,
+        current: result ? 0 : 1,
+        clearDisplay: !result,
+        values
+      })
+    }
   }
 
 addDigit(n) {
@@ -42,6 +72,14 @@ addDigit(n) {
   const currentValue = clearDisplay ? '' : this.state.displayValue
   const displayValue = currentValue + n
   this.setState({ displayValue, clearDisplay: false})
+
+  if (n !== '.') {
+    const i = this.state.current  //estou armazenando no i, o indice do array que estou mechendo.
+    const newValue = parseFloat(displayValue)
+    const values = [...this.state.values] //clonando para um novo array
+    values[i] = newValue
+    this.setState({ values})
+  }
 }
 
   render (){
